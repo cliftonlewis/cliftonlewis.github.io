@@ -439,9 +439,15 @@ a.card.paper:hover .go { text-decoration: underline; text-underline-offset: 3px;
 /* Reveal-on-scroll is shared by every page now. */
 @media (prefers-reduced-motion: reduce) { :is(.band, .cta) .art svg * { animation: none !important; } }
 
-/* 404: the pages as small shape tiles. */
-.lost { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-.lost .tile { grid-template-columns: 52px minmax(0, 1fr); align-items: center; padding: 14px; }
-.lost .tile-art { width: 52px; height: 52px; grid-row: auto; margin: 0; }
-.lost .tile h3 { margin: 0; font-size: 17px; }
-@media (max-width: 760px) { .lost .tile { grid-template-columns: 44px minmax(0, 1fr); } .lost .tile-art { width: 44px; height: 44px; margin: 0; } }
+/* 404: the pages as pills, each with its shape, tinted in the page's colour. */
+.lost { display: flex; flex-wrap: wrap; gap: 10px; }
+.go-pill { display: inline-flex; align-items: center; gap: 10px; padding: 6px 18px 6px 6px; border-radius: 999px; text-decoration: none;
+  font-family: var(--display); font-weight: 500; font-size: 16px; color: var(--ink);
+  background: color-mix(in srgb, var(--c) 16%, #fffdf9); transition: background-color .2s, color .2s, transform .2s; }
+.go-pill svg { width: 34px; height: 34px; display: block; flex: 0 0 auto; }
+.go-pill svg .in { transform-box: view-box; transform-origin: 100px 100px; transition: transform .4s cubic-bezier(.34, 1.4, .64, 1); }
+.go-pill:hover { background: var(--c); color: var(--paper); transform: translateY(-2px); }
+.go-pill[href="resources.html"]:hover, .go-pill[href="contact.html"]:hover { color: var(--ink); }
+.go-pill:hover svg .in { transform: rotate(20deg); }
+.go-pill:focus-visible { outline: 2.5px solid var(--c); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .go-pill, .go-pill svg .in { transition: none; } .go-pill:hover { transform: none; } }

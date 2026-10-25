@@ -179,10 +179,10 @@ function renderChrome() {
     });
     pills(); if (document.fonts) document.fonts.ready.then(pills);
   }
-  // 404 page: every page as a tile with its shape.
+  // 404 page: every page as a pill with its shape, tinted in that page's colour.
   const lost = document.getElementById("lost");
   if (lost) lost.innerHTML = PAGES.map(([href, label, ink, shape, tint]) =>
-    `<a class="tile" href="${href}"><span class="tile-art" aria-hidden="true">${shapeSVG(shape, `var(--${ink})`, `var(--${tint})`)}</span><h3>${label}</h3></a>`).join("");
+    `<a class="go-pill" href="${href}" style="--c:var(--${ink})">${shapeSVG(shape, `var(--${ink})`, `var(--${tint})`)}<span>${label}</span></a>`).join("");
   const foot = document.getElementById("footer");
   if (foot) foot.innerHTML = `<div class="wrap foot-inner">
       <div><nav class="shapes" aria-label="Pages">${PAGES.map(([href, label, ink, shape, tint]) =>
@@ -295,7 +295,7 @@ function revealOnScroll(selector) {
   watch();
   new MutationObserver(watch).observe(document.querySelector("main"), { childList: true, subtree: true });
 }
-if (document.querySelector("main")) revealOnScroll("main .entries > li, main .skill, main .pubs > li, main .card, main .tile, main .social > li, main .upcoming > li, main .cta");
+if (document.querySelector("main")) revealOnScroll("main .entries > li, main .skill, main .pubs > li, main .card, main .tile, main .social > li, main .upcoming > li, main .cta, main .go-pill");
 if (SITE.goatcounter && location.hostname !== "localhost") {
   const gc = document.createElement("script");
   gc.async = true; gc.src = "https://gc.zgo.at/count.js";
