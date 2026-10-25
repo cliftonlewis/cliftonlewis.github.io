@@ -451,3 +451,8 @@ a.card.paper:hover .go { text-decoration: underline; text-underline-offset: 3px;
 .go-pill:hover svg .in { transform: rotate(20deg); }
 .go-pill:focus-visible { outline: 2.5px solid var(--c); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .go-pill, .go-pill svg .in { transition: none; } .go-pill:hover { transform: none; } }
+
+/* Section headings: the small shape pops in as the heading fades up. */
+.sec > h2.rv .dot { transform: scale(0); transition: transform .5s cubic-bezier(.34, 1.6, .64, 1) calc(var(--d, 0ms) + .15s); }
+.sec > h2.rv.in .dot { transform: none; }
+.sec:nth-of-type(6n+6) > h2.rv.in .dot { transform: rotate(45deg) scale(.85); }

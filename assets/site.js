@@ -287,7 +287,7 @@ function revealOnScroll(selector) {
     setTimeout(() => { el.classList.remove("rv", "in"); el.style.removeProperty("--d"); }, 1200);
   }), { rootMargin: "0px 0px -8% 0px" });
   const watch = () => document.querySelectorAll(selector).forEach(el => {
-    if (el.dataset.rv) return; el.dataset.rv = "1";
+    if (el.dataset.rv || el.hidden) return; el.dataset.rv = "1";
     const i = [...el.parentElement.children].indexOf(el);
     el.classList.add("rv"); el.style.setProperty("--d", `${Math.min(i, 5) * 70}ms`);
     io.observe(el);
@@ -295,7 +295,11 @@ function revealOnScroll(selector) {
   watch();
   new MutationObserver(watch).observe(document.querySelector("main"), { childList: true, subtree: true });
 }
-if (document.querySelector("main")) revealOnScroll("main .entries > li, main .skill, main .pubs > li, main .card, main .tile, main .social > li, main .upcoming > li, main .cta, main .go-pill");
+if (document.querySelector("main")) revealOnScroll([
+  "main .sec > h2", "main .sec > .theme-art", "main .sec-body > :is(p, h3, .tags, .toc, .btn-row, .form)",   // blocks of every section
+  "main .entries > li", "main .skill", "main .pubs > li", "main .card", "main .tile", "main .social > li",
+  "main .upcoming > li", "main .cta", "main .go-pill"
+].join(", "));
 if (SITE.goatcounter && location.hostname !== "localhost") {
   const gc = document.createElement("script");
   gc.async = true; gc.src = "https://gc.zgo.at/count.js";
