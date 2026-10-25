@@ -81,7 +81,7 @@ function nerveNet(W, H) {
     });
   });
   // Seven of the neurons carry the animals I've worked with (PhyloPic silhouettes).
-  const spots = { 12: 0, 15: 1, 31: 2, 34: 3, 48: 4, 50: 5, 52: 6 };   // grid index -> ANIMALS index
+  const spots = { 12: 0, 15: 1, 31: 5, 34: 3, 48: 4, 50: 2, 52: 6 };   // grid index -> ANIMALS index
   let cells = "", big = "";
   pts.forEach((p, i) => {
     const a = spots[i];
