@@ -25,4 +25,4 @@ Orange dashed boxes (class `todo`) mark places waiting for your details. Delete 
 
 Light and dark mode follow the visitor's system setting.
 
-Animal silhouettes in `assets/animals/` come from [PhyloPic](https://www.phylopic.org) and are public domain (CC0 or Public Domain Mark). Contributors: Jake Warner (*Nematostella*), Thomas Hegna (*Drosophila*), Andy Wilson (Acrididae), Birgit Lang (Tettigoniidae), Caleb Gordon (Cicadidae), Brian Bourke (Culicidae); *Sycon* is uncredited.
+Animal silhouettes in `assets/animals/` come from [PhyloPic](https://www.phylopic.org) and are public domain (CC0 or Public Domain Mark). Contributors: Jake Warner (*Nematostella*), Andy Wilson (*Drosophila*), Andy Wilson (Acrididae), Birgit Lang (Tettigoniidae), Caleb Gordon (Cicadidae), Brian Bourke (Culicidae); *Sycon* is uncredited.
