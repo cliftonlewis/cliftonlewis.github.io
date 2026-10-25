@@ -182,7 +182,7 @@ function renderChrome() {
   if (foot) foot.innerHTML = `<div class="wrap foot-inner">
       <div><nav class="shapes" aria-label="Pages">${PAGES.map(([href, label, ink, shape, tint]) =>
         `<a href="${href}" title="${label}" aria-label="${label}"${known && href === cur[0] ? ' aria-current="page"' : ""}>${shapeSVG(shape, `var(--${ink})`, `var(--${tint})`)}</a>`).join("")}</nav><div class="big">${esc(SITE.name)}</div>${esc(SITE.role)} · ${esc(SITE.place)}</div>
-      <div><ul>${linkItems()}</ul><p style="margin:10px 0 0">© ${new Date().getFullYear()} · Updated ${esc(SITE.updated)} · Animal silhouettes from <a href="https://www.phylopic.org" target="_blank" rel="noopener">PhyloPic</a></p></div>
+      <div><ul>${linkItems()}</ul><p style="margin:10px 0 0">© ${new Date().getFullYear()} · Updated ${esc(SITE.updated)} · Animal silhouettes from <a href="https://www.phylopic.org" target="_blank" rel="noopener">PhyloPic</a> · Built with Claude Opus 5.5</p></div>
     </div>`;
 }
 
