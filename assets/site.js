@@ -122,7 +122,7 @@ const SHAPES = {
   net: `<path d="M60 70Q84 62 100 92M100 92Q118 80 140 66M100 92Q96 118 72 136M100 92Q124 110 134 136M72 136Q104 152 134 136" fill="none" stroke="FG" stroke-width="8" stroke-linecap="round"/><circle cx="60" cy="70" r="15"/><circle cx="140" cy="66" r="15"/><circle cx="72" cy="136" r="15"/><circle cx="134" cy="136" r="15"/><circle cx="100" cy="92" r="22"/>`,
   halves: `<path d="M52 58H148A48 40 0 0 1 52 58Z"/><path d="M52 150A48 40 0 0 1 148 150Z"/>`,
   sheets: `<rect x="50" y="60" width="100" height="34" rx="17"/><path d="M50 106H133A17 17 0 0 1 133 140H50Z"/>`,
-  dots: [64, 100, 136].map(y => [64, 100, 136].map(x => `<circle cx="${x}" cy="${y}" r="16"/>`).join("")).join(""),
+  dots: [64, 100, 136].map((y, r) => [64, 100, 136].map((x, c) => `<circle cx="${x}" cy="${y}" r="16" style="--i:${r + c}"/>`).join("")).join(""),
   steps: `<rect x="54" y="88" width="58" height="58"/><path d="M98 54H146V102Z"/>`,
   clover: `<circle cx="100" cy="66" r="28"/><circle cx="134" cy="100" r="28"/><circle cx="100" cy="134" r="28"/><circle cx="66" cy="100" r="28"/><rect x="78" y="78" width="44" height="44"/><rect x="86" y="86" width="28" height="28" fill="BG"/>`,
   // Research themes: chromatin as beads on a string, regeneration as a regrowing half,
@@ -134,7 +134,8 @@ const SHAPES = {
   flower: `<g class="petals">${Array.from({ length: 8 }, (_, i) => `<ellipse cx="100" cy="64" rx="12" ry="32" transform="rotate(${i * 45} 100 100)"/>`).join("")}</g><circle class="core" cx="100" cy="100" r="16"/>`
 };
 function shapeSVG(kind, bg, fg) {
-  return `<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="100" fill="${bg}"/><g fill="${fg}">${SHAPES[kind].replace(/BG/g, bg).replace(/FG/g, fg)}</g></svg>`;
+  // The inner group carries each shape's gentle idle motion (see style.css); the outer one its entrance.
+  return `<svg viewBox="0 0 200 200" data-kind="${kind}"><circle cx="100" cy="100" r="100" fill="${bg}"/><g fill="${fg}"><g class="in">${SHAPES[kind].replace(/BG/g, bg).replace(/FG/g, fg)}</g></g></svg>`;
 }
 
 function renderChrome() {
@@ -178,6 +179,10 @@ function renderChrome() {
     });
     pills(); if (document.fonts) document.fonts.ready.then(pills);
   }
+  // 404 page: every page as a tile with its shape.
+  const lost = document.getElementById("lost");
+  if (lost) lost.innerHTML = PAGES.map(([href, label, ink, shape, tint]) =>
+    `<a class="tile" href="${href}"><span class="tile-art" aria-hidden="true">${shapeSVG(shape, `var(--${ink})`, `var(--${tint})`)}</span><h3>${label}</h3></a>`).join("");
   const foot = document.getElementById("footer");
   if (foot) foot.innerHTML = `<div class="wrap foot-inner">
       <div><nav class="shapes" aria-label="Pages">${PAGES.map(([href, label, ink, shape, tint]) =>
@@ -272,15 +277,17 @@ async function findNewPubs() {
 renderChrome();
 renderPubs();
 
-// CV: items fade gently up as they scroll into view (once each). Off for reduced motion.
-// The paper list is filled in after load, so it's picked up as well.
+// Items fade gently up as they scroll into view (once each), on every page. Off for reduced motion.
+// Lists filled in after load (papers, contact links) are picked up as well.
 function revealOnScroll(selector) {
   if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const io = new IntersectionObserver(entries => entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    if (!e.isIntersecting) return;
+    const el = e.target; io.unobserve(el); el.classList.add("in");
+    setTimeout(() => { el.classList.remove("rv", "in"); el.style.removeProperty("--d"); }, 1200);
   }), { rootMargin: "0px 0px -8% 0px" });
   const watch = () => document.querySelectorAll(selector).forEach(el => {
-    if (el.classList.contains("rv")) return;
+    if (el.dataset.rv) return; el.dataset.rv = "1";
     const i = [...el.parentElement.children].indexOf(el);
     el.classList.add("rv"); el.style.setProperty("--d", `${Math.min(i, 5) * 70}ms`);
     io.observe(el);
@@ -288,7 +295,7 @@ function revealOnScroll(selector) {
   watch();
   new MutationObserver(watch).observe(document.querySelector("main"), { childList: true, subtree: true });
 }
-if (location.pathname.endsWith("cv.html")) revealOnScroll("main .entries > li, main .skill, main .pubs > li");
+if (document.querySelector("main")) revealOnScroll("main .entries > li, main .skill, main .pubs > li, main .card, main .tile, main .social > li, main .upcoming > li, main .cta");
 if (SITE.goatcounter && location.hostname !== "localhost") {
   const gc = document.createElement("script");
   gc.async = true; gc.src = "https://gc.zgo.at/count.js";
