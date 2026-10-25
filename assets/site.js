@@ -147,7 +147,7 @@ function renderChrome() {
   const here = (location.pathname.split("/").pop() || "index.html");
   const known = PAGES.find(p => p[0] === here);
   const cur = known || PAGES[0];
-  document.body.dataset.ink = cur[2];
+  document.body.dataset.ink = document.documentElement.dataset.ink = cur[2];   // on <html> too, so the scrollbar takes the page colour
   const mast = document.getElementById("mast");
   if (mast) {
     mast.innerHTML = `<div class="wrap">
@@ -271,6 +271,24 @@ async function findNewPubs() {
 
 renderChrome();
 renderPubs();
+
+// CV: items fade gently up as they scroll into view (once each). Off for reduced motion.
+// The paper list is filled in after load, so it's picked up as well.
+function revealOnScroll(selector) {
+  if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const io = new IntersectionObserver(entries => entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+  }), { rootMargin: "0px 0px -8% 0px" });
+  const watch = () => document.querySelectorAll(selector).forEach(el => {
+    if (el.classList.contains("rv")) return;
+    const i = [...el.parentElement.children].indexOf(el);
+    el.classList.add("rv"); el.style.setProperty("--d", `${Math.min(i, 5) * 70}ms`);
+    io.observe(el);
+  });
+  watch();
+  new MutationObserver(watch).observe(document.querySelector("main"), { childList: true, subtree: true });
+}
+if (location.pathname.endsWith("cv.html")) revealOnScroll("main .entries > li, main .skill, main .pubs > li");
 if (SITE.goatcounter && location.hostname !== "localhost") {
   const gc = document.createElement("script");
   gc.async = true; gc.src = "https://gc.zgo.at/count.js";
