@@ -18,7 +18,7 @@ Most settings live at the top of `assets/site.js`.
 | Research tiles on Home | The `tiles` block in `index.html`. Each tile names its shape and colours with `data-shape`, `data-bg` and `data-fg`. |
 | Your photo | Add `assets/headshot.jpg` and set `photo: "assets/headshot.jpg"` |
 | Colours and fonts | Tokens at the top of `assets/style.css` (Jost for headings, Instrument Sans for text) |
-| Footer "Updated" date | `updated` in `SITE` |
+| Footer "Updated" date | Automatic: it shows the month the site was last published. `updated` in `SITE` is only a fallback. |
 
 ## How the design works
 

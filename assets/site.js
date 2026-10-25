@@ -25,7 +25,7 @@ const SITE = {
   // Visit counting with GoatCounter (free, no cookies, no banner needed). Sign up at goatcounter.com,
   // then put your site code here, e.g. "cliftonlewis" for cliftonlewis.goatcounter.com. Leave "" for off.
   goatcounter: "",
-  updated: "October 2026"
+  updated: "October 2026"   // only a fallback: the footer date normally comes from the last publish (see renderChrome)
 };
 // ============================================================
 
@@ -138,6 +138,13 @@ function shapeSVG(kind, bg, fg) {
   return `<svg viewBox="0 0 200 200" data-kind="${kind}"><circle cx="100" cy="100" r="100" fill="${bg}"/><g fill="${fg}"><g class="in">${SHAPES[kind].replace(/BG/g, bg).replace(/FG/g, fg)}</g></g></svg>`;
 }
 
+// Footer "Updated" date: GitHub Pages stamps every file with the time of the latest publish, which the
+// browser exposes as document.lastModified. Falls back to SITE.updated if that isn't available.
+function lastUpdated() {
+  const d = new Date(document.lastModified);
+  return isNaN(d) ? SITE.updated : d.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+}
+
 function renderChrome() {
   // "Skip to content" link: the first thing keyboard and screen-reader users reach on every page.
   const main = document.querySelector("main");
@@ -163,7 +170,12 @@ function renderChrome() {
   document.querySelectorAll("[data-shape]").forEach(el => el.innerHTML = shapeSVG(el.dataset.shape, el.dataset.bg || "var(--tomato)", el.dataset.fg || "var(--marigold)"));
   const prints = document.getElementById("prints");
   const inner = document.querySelector(".band-inner");
-  if (!prints && inner) inner.insertAdjacentHTML("beforeend", `<div class="art" aria-hidden="true">${shapeSVG(known ? cur[3] : "flower", "var(--page)", "var(--page-soft)")}</div>`);
+  // Header art fills the placeholder written into each page (so the header doesn't jump as it loads).
+  if (!prints && inner) {
+    let art = inner.querySelector(".art");
+    if (!art) { inner.insertAdjacentHTML("beforeend", `<div class="art" aria-hidden="true"></div>`); art = inner.querySelector(".art"); }
+    art.innerHTML = shapeSVG(known ? cur[3] : "flower", "var(--page)", "var(--page-soft)");
+  }
   if (prints) { const band = prints.closest(".band"); prints.remove(); band.insertAdjacentHTML("beforeend", nerveNet(640, 460));   // after the header text, so Tab reaches the links first
     band.querySelectorAll(".net .big").forEach(g => {
       const tag = band.querySelector(`.net .tag[data-a="${g.dataset.a}"]`);
@@ -182,12 +194,12 @@ function renderChrome() {
   // 404 page: every page as a pill with its shape, tinted in that page's colour.
   const lost = document.getElementById("lost");
   if (lost) lost.innerHTML = PAGES.map(([href, label, ink, shape, tint]) =>
-    `<a class="go-pill" href="${href}" style="--c:var(--${ink})">${shapeSVG(shape, `var(--${ink})`, `var(--${tint})`)}<span>${label}</span></a>`).join("");
+    `<a class="go-pill" href="${href}" style="--c:var(--${ink})${["magenta", "forest", "cornflower"].includes(ink) ? `;--cf:var(--${ink}-ink);--ct:var(--paper)` : ""}">${shapeSVG(shape, `var(--${ink})`, `var(--${tint})`)}<span>${label}</span></a>`).join("");
   const foot = document.getElementById("footer");
   if (foot) foot.innerHTML = `<div class="wrap foot-inner">
       <div><nav class="shapes" aria-label="Pages">${PAGES.map(([href, label, ink, shape, tint]) =>
         `<a href="${href}" title="${label}" aria-label="${label}"${known && href === cur[0] ? ' aria-current="page"' : ""}>${shapeSVG(shape, `var(--${ink})`, `var(--${tint})`)}</a>`).join("")}</nav><div class="big">${esc(SITE.name)}</div>${esc(SITE.role)} · ${esc(SITE.place)}</div>
-      <div><ul>${linkItems()}</ul><p style="margin:10px 0 0">© ${new Date().getFullYear()} · Updated ${esc(SITE.updated)} · Animal silhouettes from <a href="https://www.phylopic.org" target="_blank" rel="noopener">PhyloPic</a> · Built with Claude Opus 5.5</p></div>
+      <div><ul>${linkItems()}</ul><p style="margin:10px 0 0">© ${new Date().getFullYear()} · Updated ${esc(lastUpdated())} · Animal silhouettes from <a href="https://www.phylopic.org" target="_blank" rel="noopener">PhyloPic</a> · Built with Claude Opus 5.5</p></div>
     </div>`;
 }
 
